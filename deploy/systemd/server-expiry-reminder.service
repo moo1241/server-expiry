@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=server-reminder
 Group=server-reminder
-WorkingDirectory=/opt/server-expiry-reminder
+WorkingDirectory=/opt/server-expiry-reminder/apps/backend
 EnvironmentFile=/opt/server-expiry-reminder/apps/backend/.env
 Environment=NODE_OPTIONS=--max-old-space-size=384
 ExecStart=/usr/bin/node /opt/server-expiry-reminder/apps/backend/dist/server.js

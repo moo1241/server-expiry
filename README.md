@@ -27,13 +27,13 @@ npm --version
 mkdir -p /opt/server-expiry-reminder
 ~~~
 
-从 GitHub Releases 下载运行安装包，例如 `server-expiry-reminder-v0.1.1-runtime.zip`，然后上传到 `/opt/server-expiry-reminder`。
+从 GitHub Releases 下载运行安装包，例如 `server-expiry-reminder-v0.1.3-runtime.zip`，然后上传到 `/opt/server-expiry-reminder`。
 
 可以使用服务器面板的文件上传功能，也可以在 Windows PowerShell 中执行：
 
 ~~~powershell
 $SERVER_IP = "服务器公网IP"
-$PACKAGE = "server-expiry-reminder-v0.1.1-runtime.zip"
+$PACKAGE = "server-expiry-reminder-v0.1.3-runtime.zip"
 scp ".\$PACKAGE" "root@${SERVER_IP}:/opt/server-expiry-reminder/"
 ~~~
 
@@ -43,7 +43,7 @@ scp ".\$PACKAGE" "root@${SERVER_IP}:/opt/server-expiry-reminder/"
 
 ~~~bash
 cd /opt/server-expiry-reminder
-PACKAGE=server-expiry-reminder-v0.1.1-runtime.zip
+PACKAGE=server-expiry-reminder-v0.1.3-runtime.zip
 unzip -o "$PACKAGE" -d /opt/server-expiry-reminder
 npm install --jobs=1 --no-audit --no-fund
 cp -n .env.example apps/backend/.env
@@ -90,6 +90,7 @@ if ! id server-reminder >/dev/null 2>&1; then
 fi
 install -d -o server-reminder -g server-reminder /opt/server-expiry-reminder/apps/backend/data
 install -d -o server-reminder -g server-reminder /opt/server-expiry-reminder/apps/backend/backups
+chown -R server-reminder:server-reminder /opt/server-expiry-reminder/apps/backend/data /opt/server-expiry-reminder/apps/backend/backups
 chown root:server-reminder /opt/server-expiry-reminder/apps/backend/.env
 chmod 640 /opt/server-expiry-reminder/apps/backend/.env
 ~~~
@@ -100,6 +101,7 @@ chmod 640 /opt/server-expiry-reminder/apps/backend/.env
 install -m 644 deploy/systemd/server-expiry-reminder.service /etc/systemd/system/server-expiry-reminder.service
 systemctl daemon-reload
 systemctl enable --now server-expiry-reminder
+sleep 2
 systemctl is-active server-expiry-reminder
 curl -i http://127.0.0.1:3000/api/health
 ~~~
@@ -145,6 +147,16 @@ systemctl is-active server-expiry-reminder
 
 登录管理后台，打开 Telegram 页面，发送测试消息。到期提醒会按照后台设置的规则发送，消息使用中文，并按后台选择的北京时间或 UTC 显示。
 
+如果服务器还没有安装 Nginx，先执行：
+
+~~~bash
+apt update
+apt install -y nginx
+systemctl enable --now nginx
+mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
+rm -f /etc/nginx/sites-enabled/default
+~~~
+
 ## 7. 配置域名和 Nginx
 
 先在域名服务商添加 DNS A 记录：
@@ -177,6 +189,14 @@ server_name YOUR_DOMAIN;
 
 ssl_certificate /etc/ssl/server-expiry/fullchain.pem;
 ssl_certificate_key /etc/ssl/server-expiry/privkey.pem;
+~~~
+
+如果 `nginx -t` 提示 `duplicate default server`，先关闭 Ubuntu 自带的默认站点：
+
+~~~bash
+rm -f /etc/nginx/sites-enabled/default
+nginx -t
+systemctl reload nginx
 ~~~
 
 把 `YOUR_DOMAIN` 替换为真实域名，把证书路径替换为实际路径，然后启用配置：
