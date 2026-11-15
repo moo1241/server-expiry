@@ -174,7 +174,7 @@ const recoveryForm = reactive({ username: '', recoveryCode: '', newPassword: '',
 const servers = ref<ServerView[]>([]);
 const serverTotal = ref(0);
 const serverSearch = ref('');
-const serverStatusFilter = ref<'active' | 'archived' | 'all'>('active');
+const serverStatusFilter = ref<'all'>('all');
 const serverLoading = ref(false);
 const notifications = ref<NotificationItem[]>([]);
 const notificationTotal = ref(0);
@@ -835,7 +835,7 @@ onMounted(async () => {
           <el-card class="panel-card" shadow="never">
             <div class="toolbar">
               <el-input v-model="serverSearch" :placeholder="labels.search" clearable @keyup.enter="loadServers" />
-              <el-select v-model="serverStatusFilter" @change="loadServers"><el-option value="active" :label="labels.active" /><el-option value="all" :label="labels.all" /></el-select>
+              <el-select v-model="serverStatusFilter" @change="loadServers"><el-option value="all" :label="labels.all" /></el-select>
               <el-button @click="loadServers">{{ labels.search }}</el-button>
             </div>
             <el-table v-loading="serverLoading" :data="servers" row-key="id" empty-text="">

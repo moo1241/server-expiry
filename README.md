@@ -27,13 +27,13 @@ npm --version
 mkdir -p /opt/server-expiry-reminder
 ~~~
 
-从 GitHub Releases 下载运行安装包，例如 `server-expiry-reminder-v0.1.3-runtime.zip`，然后上传到 `/opt/server-expiry-reminder`。
+从 GitHub Releases 下载运行安装包，例如 `server-expiry-reminder-v0.1.4-runtime.zip`，然后上传到 `/opt/server-expiry-reminder`。
 
 可以使用服务器面板的文件上传功能，也可以在 Windows PowerShell 中执行：
 
 ~~~powershell
 $SERVER_IP = "服务器公网IP"
-$PACKAGE = "server-expiry-reminder-v0.1.3-runtime.zip"
+$PACKAGE = "server-expiry-reminder-v0.1.4-runtime.zip"
 scp ".\$PACKAGE" "root@${SERVER_IP}:/opt/server-expiry-reminder/"
 ~~~
 
@@ -43,7 +43,7 @@ scp ".\$PACKAGE" "root@${SERVER_IP}:/opt/server-expiry-reminder/"
 
 ~~~bash
 cd /opt/server-expiry-reminder
-PACKAGE=server-expiry-reminder-v0.1.3-runtime.zip
+PACKAGE=server-expiry-reminder-v0.1.4-runtime.zip
 unzip -o "$PACKAGE" -d /opt/server-expiry-reminder
 npm install --jobs=1 --no-audit --no-fund
 cp -n .env.example apps/backend/.env
