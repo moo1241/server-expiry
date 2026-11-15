@@ -72,6 +72,15 @@ const labels = {
   username: '\u7528\u6237\u540d',
   password: '\u5bc6\u7801',
   loginAction: '\u767b\u5f55',
+  forgotPassword: '\u5fd8\u8bb0\u5bc6\u7801',
+  recoveryCode: '\u6062\u590d\u7801',
+  newPassword: '\u65b0\u5bc6\u7801',
+  confirmPassword: '\u786e\u8ba4\u5bc6\u7801',
+  resetPassword: '\u91cd\u7f6e\u5bc6\u7801',
+  backToLogin: '\u8fd4\u56de\u767b\u5f55',
+  recoveryHint: '\u8bf7\u5728\u670d\u52a1\u5668\u4e0a\u6267\u884c npm run admin:recovery:create \u83b7\u53d6 30 \u5206\u949f\u6709\u6548\u7684\u6062\u590d\u7801',
+  passwordMinLength: '\u5bc6\u7801\u81f3\u5c11\u9700\u8981 8 \u4f4d',
+  recoveryInvalid: '\u6062\u590d\u7801\u65e0\u6548\u6216\u5df2\u8fc7\u671f',
   dashboard: '\u4eea\u8868\u76d8',
   servers: '\u670d\u52a1\u5668',
   notifications: '\u901a\u77e5\u8bb0\u5f55',
@@ -157,7 +166,11 @@ const isAuthenticated = ref(false);
 const currentView = ref<ViewName>('dashboard');
 const loginPending = ref(false);
 const loginError = ref('');
+const showForgotPassword = ref(false);
+const recoveryPending = ref(false);
+const recoveryError = ref('');
 const loginForm = reactive({ username: '', password: '' });
+const recoveryForm = reactive({ username: '', recoveryCode: '', newPassword: '', confirmPassword: '' });
 const servers = ref<ServerView[]>([]);
 const serverTotal = ref(0);
 const serverSearch = ref('');
@@ -342,6 +355,49 @@ async function submitLogin(): Promise<void> {
     loginError.value = error instanceof Error && error.message !== 'UNAUTHENTICATED' ? error.message : labels.loginFailed;
   } finally {
     loginPending.value = false;
+  }
+}
+
+async function submitRecovery(): Promise<void> {
+  recoveryError.value = '';
+
+  if (recoveryForm.newPassword !== recoveryForm.confirmPassword) {
+    recoveryError.value = labels.confirmPassword;
+    return;
+  }
+
+  if (recoveryForm.newPassword.length < 8) {
+    recoveryError.value = labels.passwordMinLength;
+    return;
+  }
+
+  recoveryPending.value = true;
+
+  try {
+    await apiFetch('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: recoveryForm.username,
+        recoveryCode: recoveryForm.recoveryCode,
+        newPassword: recoveryForm.newPassword,
+      }),
+    });
+    showForgotPassword.value = false;
+    loginForm.username = recoveryForm.username;
+    recoveryForm.recoveryCode = '';
+    recoveryForm.newPassword = '';
+    recoveryForm.confirmPassword = '';
+    ElMessage.success(labels.resetPassword);
+  } catch (error) {
+    if (error instanceof Error && error.message === 'PASSWORD_TOO_SHORT') {
+      recoveryError.value = labels.passwordMinLength;
+    } else if (error instanceof Error && error.message === 'RECOVERY_INVALID') {
+      recoveryError.value = labels.recoveryInvalid;
+    } else {
+      recoveryError.value = error instanceof Error ? error.message : labels.requestFailed;
+    }
+  } finally {
+    recoveryPending.value = false;
   }
 }
 
@@ -704,17 +760,23 @@ onMounted(async () => {
   <div v-else-if="!isAuthenticated" class="login-page">
     <el-card class="login-card" shadow="never">
       <p class="eyebrow">SERVER EXPIRY REMINDER</p>
-      <h1>{{ labels.login }}</h1>
+      <h1>{{ showForgotPassword ? labels.forgotPassword : labels.login }}</h1>
       <p class="login-subtitle">{{ labels.appName }}</p>
-      <el-alert v-if="loginError" :title="loginError" type="error" show-icon :closable="false" />
-      <el-form class="login-form" label-position="top" @submit.prevent="submitLogin">
-        <el-form-item :label="labels.username">
-          <el-input v-model="loginForm.username" autocomplete="username" />
-        </el-form-item>
-        <el-form-item :label="labels.password">
-          <el-input v-model="loginForm.password" type="password" show-password autocomplete="current-password" @keyup.enter="submitLogin" />
-        </el-form-item>
+      <el-alert v-if="showForgotPassword ? recoveryError : loginError" :title="showForgotPassword ? recoveryError : loginError" type="error" show-icon :closable="false" />
+      <el-form v-if="!showForgotPassword" class="login-form" label-position="top" @submit.prevent="submitLogin">
+        <el-form-item :label="labels.username"><el-input v-model="loginForm.username" autocomplete="username" /></el-form-item>
+        <el-form-item :label="labels.password"><el-input v-model="loginForm.password" type="password" show-password autocomplete="current-password" @keyup.enter="submitLogin" /></el-form-item>
         <el-button class="login-button" type="primary" :loading="loginPending" @click="submitLogin">{{ labels.loginAction }}</el-button>
+        <el-link class="forgot-link" type="primary" :underline="true" @click="showForgotPassword = true">{{ labels.forgotPassword }}</el-link>
+      </el-form>
+      <el-form v-else class="login-form" label-position="top" @submit.prevent="submitRecovery">
+        <p class="recovery-hint">{{ labels.recoveryHint }}</p>
+        <el-form-item :label="labels.username"><el-input v-model="recoveryForm.username" autocomplete="username" /></el-form-item>
+        <el-form-item :label="labels.recoveryCode"><el-input v-model="recoveryForm.recoveryCode" /></el-form-item>
+        <el-form-item :label="labels.newPassword"><el-input v-model="recoveryForm.newPassword" type="password" show-password /></el-form-item>
+        <el-form-item :label="labels.confirmPassword"><el-input v-model="recoveryForm.confirmPassword" type="password" show-password @keyup.enter="submitRecovery" /></el-form-item>
+        <el-button class="login-button" type="primary" :loading="recoveryPending" @click="submitRecovery">{{ labels.resetPassword }}</el-button>
+        <el-link class="forgot-link" type="primary" :underline="true" @click="showForgotPassword = false">{{ labels.backToLogin }}</el-link>
       </el-form>
     </el-card>
   </div>

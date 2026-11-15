@@ -1,0 +1,21 @@
+[Unit]
+Description=Server Expiry Reminder API
+After=network.target
+
+[Service]
+Type=simple
+User=server-reminder
+Group=server-reminder
+WorkingDirectory=/opt/server-expiry-reminder
+EnvironmentFile=/opt/server-expiry-reminder/apps/backend/.env
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/server-expiry-reminder/apps/backend/data /opt/server-expiry-reminder/apps/backend/backups
+
+[Install]
+WantedBy=multi-user.target

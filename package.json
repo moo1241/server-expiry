@@ -16,7 +16,9 @@
     "dev:backend": "npm run dev --workspace apps/backend",
     "dev:frontend": "npm run dev --workspace apps/frontend",
     "db:migrate": "npm run migrate --workspace apps/backend",
+    "db:backup": "npm run backup --workspace apps/backend",
     "admin:create": "npm run admin:create --workspace apps/backend",
+    "admin:recovery:create": "npm run admin:recovery:create --workspace apps/backend",
     "build": "npm run build --workspace apps/frontend && npm run build --workspace apps/backend",
     "start": "npm run start --workspace apps/backend"
   },

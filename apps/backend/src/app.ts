@@ -5,6 +5,7 @@ import multipart from '@fastify/multipart';
 import type { SqliteDatabase } from './db/database.js';
 import { findAdminByUsername, toPublicAdmin } from './auth/admin.js';
 import { getAuthenticatedAdmin } from './auth/guard.js';
+import { resetAdminPassword } from './auth/recovery.js';
 import { verifyPassword } from './auth/password.js';
 import {
   createSession,
@@ -23,6 +24,12 @@ import { registerReminderRuleRoutes } from './reminders/rule-routes.js';
 type LoginBody = {
   username?: unknown;
   password?: unknown;
+};
+
+type RecoveryBody = {
+  username?: unknown;
+  recoveryCode?: unknown;
+  newPassword?: unknown;
 };
 
 type AppOptions = {
@@ -93,6 +100,28 @@ export function buildApp(database: SqliteDatabase, options: AppOptions = {}): Fa
       user: publicAdmin,
       expiresAtUtc: session.expiresAtUtc,
     };
+  });
+
+  app.post<{ Body: RecoveryBody }>('/api/auth/forgot-password', async (request, reply) => {
+    const body = request.body ?? {};
+
+    if (
+      typeof body.username !== 'string' ||
+      typeof body.recoveryCode !== 'string' ||
+      typeof body.newPassword !== 'string'
+    ) {
+      return reply.code(400).send({ error: 'INVALID_REQUEST' });
+    }
+
+    try {
+      resetAdminPassword(database, body.username, body.recoveryCode, body.newPassword);
+      return { reset: true };
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('8 to 256')) {
+        return reply.code(400).send({ error: 'PASSWORD_TOO_SHORT' });
+      }
+      return reply.code(400).send({ error: 'RECOVERY_INVALID' });
+    }
   });
 
   app.get('/api/auth/me', async (request, reply) => {

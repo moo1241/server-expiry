@@ -63,6 +63,21 @@ body {
   width: 100%;
 }
 
+.forgot-link {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin: 14px auto 0;
+  font-size: 14px;
+}
+
+.recovery-hint {
+  margin: 0 0 18px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
 .admin-shell {
   min-height: 100vh;
   background: #f5f7fa;

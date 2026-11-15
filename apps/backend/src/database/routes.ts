@@ -37,12 +37,12 @@ function validateSourceDatabase(source: Database.Database, current: SqliteDataba
   const tableNames = new Set(tables.map((table) => table.name));
 
   if (requiredTables.some((table) => !tableNames.has(table))) {
-    throw new Error('数据库文件缺少系统所需的数据表');
+    throw new Error('\u6570\u636e\u5e93\u6587\u4ef6\u7f3a\u5c11\u7cfb\u7edf\u6240\u9700\u7684\u6570\u636e\u8868');
   }
 
   const sourceAdmin = source.prepare('SELECT id FROM admin_accounts LIMIT 1').get();
   if (!sourceAdmin) {
-    throw new Error('数据库文件中没有管理员账号');
+    throw new Error('\u6570\u636e\u5e93\u6587\u4ef6\u4e2d\u6ca1\u6709\u7ba1\u7406\u5458\u8d26\u53f7');
   }
 
   const currentMigrations = migrationChecksums(current);
@@ -50,7 +50,7 @@ function validateSourceDatabase(source: Database.Database, current: SqliteDataba
 
   for (const [version, checksum] of currentMigrations) {
     if (sourceMigrations.get(version) !== checksum) {
-      throw new Error(`数据库迁移版本不匹配：${version}`);
+      throw new Error(`\u6570\u636e\u5e93\u8fc1\u79fb\u7248\u672c\u4e0d\u5339\u914d\uff1a${version}`);
     }
   }
 }

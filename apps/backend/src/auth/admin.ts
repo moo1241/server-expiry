@@ -36,9 +36,7 @@ export function createAdminAccount(database: SqliteDatabase, username: string, p
     throw new Error('Admin username must contain 3 to 64 characters');
   }
 
-  if (password.length < 12 || password.length > 256) {
-    throw new Error('Admin password must contain 12 to 256 characters');
-  }
+  validatePassword(password);
 
   const passwordHash = hashPassword(password);
   const createAccount = database.transaction(() => {
@@ -62,4 +60,10 @@ export function createAdminAccount(database: SqliteDatabase, username: string, p
   });
 
   return createAccount();
+}
+
+export function validatePassword(password: string): void {
+  if (password.length < 8 || password.length > 256) {
+    throw new Error('Admin password must contain 8 to 256 characters');
+  }
 }

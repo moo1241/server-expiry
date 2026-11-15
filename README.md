@@ -1,28 +1,28 @@
-# &#x670d;&#x52a1;&#x5668;&#x5230;&#x671f;&#x63d0;&#x9192;&#x7cfb;&#x7edf;
+# 服务器到期提醒系统
 
-&#x8fd9;&#x662f;&#x4e00;&#x4e2a;&#x5355;&#x7ba1;&#x7406;&#x5458;&#x7684;&#x670d;&#x52a1;&#x5668;&#x5230;&#x671f;&#x63d0;&#x9192;&#x7cfb;&#x7edf;&#xff0c;&#x4f7f;&#x7528; Vue 3&#x3001;Vite&#x3001;TypeScript&#x3001;Element Plus&#x3001;Node.js&#x3001;Fastify&#x3001;SQLite&#x3001;node-cron &#x548c; Telegram Bot API&#x3002;
+这是一个单管理员的服务器到期提醒系统，使用 Vue 3、Vite、TypeScript、Element Plus、Node.js、Fastify、SQLite、node-cron 和 Telegram Bot API。
 
-## &#x5df2;&#x5b9e;&#x73b0;
+## 已实现
 
-- &#x7ba1;&#x7406;&#x5458;&#x767b;&#x5f55;&#x548c;&#x4f1a;&#x8bdd;&#x8ba4;&#x8bc1;
-- &#x670d;&#x52a1;&#x5668;&#x6dfb;&#x52a0;&#x3001;&#x7f16;&#x8f91;&#x3001;&#x67e5;&#x8be2;&#x548c;&#x5220;&#x9664;
-- &#x670d;&#x52a1;&#x5546;&#x548c;&#x5730;&#x533a;&#x53ef;&#x641c;&#x7d22;&#x3001;&#x53ef;&#x521b;&#x5efa;&#x65b0;&#x503c;
-- IP &#x5730;&#x5740;&#x53ef;&#x9009;
-- &#x5317;&#x4eac;&#x65f6;&#x95f4;&#x548c; UTC &#x4e24;&#x79cd;&#x663e;&#x793a;&#x65f6;&#x533a;
-- &#x5230;&#x671f;&#x5269;&#x4f59;&#x65f6;&#x95f4;&#x8ba1;&#x7b97;
-- &#x5230;&#x671f;&#x63d0;&#x9192;&#x3001;&#x5931;&#x8d25;&#x91cd;&#x8bd5;&#x548c; Telegram &#x901a;&#x77e5;
-- &#x63d0;&#x9192;&#x8ba1;&#x5212;&#x53bb;&#x91cd;&#x548c;&#x53d1;&#x9001;&#x5386;&#x53f2;
-- &#x7cfb;&#x7edf;&#x8bbe;&#x7f6e;&#x548c;&#x4e2d;&#x6587;&#x7ba1;&#x7406;&#x540e;&#x53f0;
+- 管理员登录和会话认证
+- 服务器添加、编辑、查询和删除
+- 服务商和地区可搜索、可创建新值
+- IP 地址可选
+- 北京时间和 UTC 两种显示时区
+- 到期剩余时间计算
+- 到期提醒、失败重试和 Telegram 通知
+- 提醒计划去重和发送历史
+- 系统设置和中文管理后台
 
-## &#x73af;&#x5883;&#x8981;&#x6c42;
+## 环境要求
 
-- Node.js 20 &#x6216;&#x66f4;&#x9ad8;&#x7248;&#x672c;
-- npm 10 &#x6216;&#x66f4;&#x9ad8;&#x7248;&#x672c;
-- Ubuntu &#x670d;&#x52a1;&#x5668;&#x3001;Nginx &#x548c; systemd
+- Node.js 20 或更高版本
+- npm 10 或更高版本
+- Ubuntu 服务器、Nginx 和 systemd
 
-## &#x672c;&#x5730;&#x5b89;&#x88c5;&#x548c;&#x542f;&#x52a8;
+## 本地安装和启动
 
-&#x5728;&#x9879;&#x76ee;&#x6839;&#x76ee;&#x5f55;&#x6267;&#x884c;&#xff1a;
+在项目根目录执行：
 
 ~~~bash
 npm install
@@ -31,59 +31,126 @@ npm run db:migrate
 npm run dev
 ~~~
 
-Windows PowerShell&#xff1a;
+Windows PowerShell：
 
 ~~~powershell
 Copy-Item .env.example apps/backend/.env
 ~~~
 
-&#x524d;&#x7aef;&#x5730;&#x5740;&#x4e3a; http://localhost:5173&#xff0c;&#x540e;&#x7aef;&#x5065;&#x5eb7;&#x68c0;&#x67e5;&#x4e3a; http://localhost:3000/api/health&#x3002;
+前端地址为 http://localhost:5173，后端健康检查为 http://localhost:3000/api/health。
 
-## &#x6570;&#x636e;&#x5e93;&#x548c;&#x7ba1;&#x7406;&#x5458;
+## 数据库和管理员
 
-&#x6267;&#x884c;&#x6570;&#x636e;&#x5e93;&#x8fc1;&#x79fb;&#xff1a;
+执行数据库迁移：
 
 ~~~bash
 npm run db:migrate
 ~~~
 
-&#x521b;&#x5efa;&#x7ba1;&#x7406;&#x5458;&#x65f6;&#xff0c;&#x4e34;&#x65f6;&#x5728; apps/backend/.env &#x4e2d;&#x52a0;&#x5165; ADMIN_USERNAME &#x548c; ADMIN_PASSWORD&#xff0c;&#x7136;&#x540e;&#x6267;&#x884c;&#xff1a;
+创建管理员时，临时在 apps/backend/.env 中加入 ADMIN_USERNAME 和 ADMIN_PASSWORD，然后执行：
 
 ~~~bash
 npm run admin:create
 ~~~
 
-&#x6210;&#x529f;&#x540e;&#x5220;&#x9664;&#x8fd9;&#x4e24;&#x4e2a;&#x4e34;&#x65f6;&#x73af;&#x5883;&#x53d8;&#x91cf;&#x3002;&#x5bc6;&#x7801;&#x4f7f;&#x7528; Node.js scrypt &#x54c8;&#x5e0c;&#x4fdd;&#x5b58;&#x3002;
+成功后删除这两个临时环境变量。密码使用 Node.js scrypt 哈希保存。
 
-## &#x670d;&#x52a1;&#x5668;&#x7ba1;&#x7406;
+## 服务器管理
 
-- GET /api/servers &#x67e5;&#x8be2;&#x670d;&#x52a1;&#x5668;
-- POST /api/servers &#x6dfb;&#x52a0;&#x670d;&#x52a1;&#x5668;
-- PATCH /api/servers/:id &#x7f16;&#x8f91;&#x670d;&#x52a1;&#x5668;
-- DELETE /api/servers/:id &#x5220;&#x9664;&#x670d;&#x52a1;&#x5668;&#x5e76;&#x6e05;&#x7406;&#x63d0;&#x9192;&#x5386;&#x53f2;
-- POST /api/servers/:id/renew &#x7eed;&#x8d39;&#x5e76;&#x751f;&#x6210;&#x65b0;&#x63d0;&#x9192;&#x4ee3;&#x6b21;
+- GET /api/servers 查询服务器
+- POST /api/servers 添加服务器
+- PATCH /api/servers/:id 编辑服务器
+- DELETE /api/servers/:id 删除服务器并清理提醒历史
+- POST /api/servers/:id/renew 续费并生成新提醒代次
 
-&#x65f6;&#x95f4;&#x5728;&#x6570;&#x636e;&#x5e93;&#x4e2d;&#x7edf;&#x4e00;&#x4f7f;&#x7528; UTC&#xff0c;&#x540e;&#x53f0;&#x53ef;&#x9009;&#x5317;&#x4eac;&#x65f6;&#x95f4;&#x6216; UTC&#x3002;
+时间在数据库中统一使用 UTC，后台可选北京时间或 UTC。
 
-## &#x63d0;&#x9192;&#x9891;&#x7387;
+## 提醒频率
 
-&#x5728;&#x540e;&#x53f0;&#x7cfb;&#x7edf;&#x8bbe;&#x7f6e;&#x4e2d;&#x4fee;&#x6539;&#x63d0;&#x9192;&#x89c4;&#x5219;&#x3002;&#x9ed8;&#x8ba4;&#x89c4;&#x5219;&#x4e3a;&#x5230;&#x671f;&#x524d; 7&#x3001;3&#x3001;2&#x3001;1 &#x5929;&#x548c;&#x5230;&#x671f;&#x5f53;&#x5929;&#xff0c;&#x6bcf;&#x6761;&#x89c4;&#x5219;&#x53ef;&#x8bbe;&#x7f6e;&#x6bcf;&#x5929; 1 &#x5230; 24 &#x6b21;&#x3002;&#x591a;&#x6b21;&#x63d0;&#x9192;&#x4f1a;&#x5728;&#x5bf9;&#x5e94;&#x7684; 24 &#x5c0f;&#x65f6;&#x7a97;&#x53e3;&#x5185;&#x5e73;&#x5747;&#x5206;&#x5e03;&#x3002;
+在后台系统设置中修改提醒规则。默认规则为到期前 7、3、2、1 天和到期当天，每条规则可设置每天 1 到 24 次。多次提醒会在对应的 24 小时窗口内平均分布。
 
-&#x670d;&#x52a1;&#x5668;&#x505c;&#x673a;&#x540e;&#x79ef;&#x7d2f;&#x591a;&#x6761;&#x8fc7;&#x671f;&#x8ba1;&#x5212;&#x65f6;&#xff0c;&#x8c03;&#x5ea6;&#x5668;&#x4f1a;&#x5408;&#x5e76;&#x65e7;&#x8ba1;&#x5212;&#xff0c;&#x53ea;&#x53d1;&#x9001;&#x6700;&#x65b0;&#x7684;&#x4e00;&#x6761;&#x3002;
+服务器停机后积累多条过期计划时，调度器会合并旧计划，只发送最新的一条。
 
-## Telegram &#x901a;&#x77e5;
+## Telegram 通知
 
-&#x914d;&#x7f6e; TELEGRAM_BOT_TOKEN&#x3001;TELEGRAM_CHAT_ID &#x548c; REMINDER_SCHEDULER_ENABLED=true&#x3002;&#x6d4b;&#x8bd5;&#x63a5;&#x53e3;&#x4e3a; POST /api/telegram/test&#x3002;&#x6d88;&#x606f;&#x4f7f;&#x7528;&#x4e2d;&#x6587;&#x5e76;&#x6309;&#x540e;&#x53f0;&#x9009;&#x62e9;&#x7684;&#x65f6;&#x533a;&#x663e;&#x793a;&#x3002;
+配置 TELEGRAM_BOT_TOKEN、TELEGRAM_CHAT_ID 和 REMINDER_SCHEDULER_ENABLED=true。测试接口为 POST /api/telegram/test。消息使用中文并按后台选择的时区显示。
 
-## &#x6784;&#x5efa;&#x548c; Ubuntu &#x90e8;&#x7f72;
+## 构建和 Ubuntu 部署
 
 ~~~bash
 npm run build
 systemctl restart server-expiry-reminder
 ~~~
 
-Nginx &#x63d0;&#x4f9b; apps/frontend/dist &#x9759;&#x6001;&#x6587;&#x4ef6;&#xff0c;&#x5e76;&#x5c06; /api &#x8f6c;&#x53d1;&#x5230; 127.0.0.1:3000&#x3002;
+Nginx 提供 apps/frontend/dist 静态文件，并将 /api 转发到 127.0.0.1:3000。
 
-## &#x5b89;&#x5168;&#x63d0;&#x793a;
+## 安全提示
 
-&#x4e0d;&#x8981;&#x5c06; Bot Token&#x3001;Chat ID &#x548c;&#x7ba1;&#x7406;&#x5458;&#x5bc6;&#x7801;&#x5199;&#x5165;&#x6e90;&#x7801;&#x6216;&#x63d0;&#x4ea4;&#x5230; Git&#x3002;&#x542f;&#x7528; HTTPS &#x540e;&#x5c06; SESSION_COOKIE_SECURE &#x8bbe;&#x4e3a; true&#x3002;
+不要将 Bot Token、Chat ID 和管理员密码写入源码或提交到 Git。启用 HTTPS 后将 SESSION_COOKIE_SECURE 设为 true。
+## 域名访问配置
+
+如果使用域名访问，先在域名服务商添加 DNS A 记录：
+
+~~~text
+主机记录：@
+记录类型：A
+记录值：服务器公网 IP
+~~~
+
+等待 DNS 解析生效后，在 Ubuntu 服务器执行：
+
+~~~bash
+cd /opt/server-expiry-reminder
+cp deploy/nginx/server-expiry-reminder.http.conf /etc/nginx/sites-available/server-expiry-reminder
+nano /etc/nginx/sites-available/server-expiry-reminder
+ln -sfn /etc/nginx/sites-available/server-expiry-reminder /etc/nginx/sites-enabled/server-expiry-reminder
+nginx -t
+systemctl reload nginx
+~~~
+
+测试域名：
+
+~~~bash
+curl -i http://你的域名/api/health
+~~~
+
+在 apps/backend/.env 中设置：
+
+~~~env
+SESSION_COOKIE_SECURE=true
+~~~
+
+然后重启后端：
+
+~~~bash
+systemctl restart server-expiry-reminder
+~~~
+
+使用服务器 IP 访问时不需配置域名证书。HTTPS 需要你提前准备证书文件，并在 Nginx 配置中填写证书和私钥路径。
+
+## Nginx HTTPS 配置说明
+
+HTTPS 模板包含默认拒绝站点和真实域名站点。默认拒绝站点用来拦截通过服务器 IP 的请求，使用 ssl_reject_handshake 不需要填写证书。
+
+真实域名站点才提供页面和 API，只需在这一段中填写：
+
+~~~nginx
+server_name YOUR_DOMAIN;
+
+ssl_certificate /etc/ssl/server-expiry/fullchain.pem;
+ssl_certificate_key /etc/ssl/server-expiry/privkey.pem;
+~~~
+
+复制 HTTPS 模板后，直接编辑文件替换域名和证书位置：
+
+~~~bash
+cp deploy/nginx/server-expiry-reminder.manual-https.conf /etc/nginx/sites-available/server-expiry-reminder
+nano /etc/nginx/sites-available/server-expiry-reminder
+~~~
+
+在编辑器中把 `YOUR_DOMAIN` 替换为实际域名，把证书路径替换为实际文件路径。修改后执行：
+
+~~~bash
+nginx -t
+systemctl reload nginx
+~~~

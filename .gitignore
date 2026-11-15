@@ -6,5 +6,10 @@ coverage/
 !.env.example
 *.log
 data/
+backups/
 .DS_Store
 Thumbs.db
+*.zip
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
