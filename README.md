@@ -154,3 +154,43 @@ nano /etc/nginx/sites-available/server-expiry-reminder
 nginx -t
 systemctl reload nginx
 ~~~
+
+## GitHub Releases 更新步骤
+
+每次发布新版本时，在 GitHub 的 Releases 页面下载实际版本的安装包，例如 server-expiry-reminder-v1.1.0.zip。把实际文件名填入下面的 RELEASE_ZIP 变量后，再更新 Ubuntu 服务器。
+
+1. 将新压缩包上传到服务器的 /root/ 目录。
+2. 进入项目目录并手动备份数据库。
+3. 停止 systemd 服务。
+4. 将新安装包解压到项目目录。压缩包不包含 apps/backend/.env，现有环境变量会保留。
+5. 安装新依赖、执行数据库迁移并重新构建。
+6. 启动服务并检查健康接口。
+7. 如果更新包包含 Nginx 配置变更，在检查配置后重载 Nginx。
+
+~~~bash
+cd /opt/server-expiry-reminder
+RELEASE_ZIP=server-expiry-reminder-vX.Y.Z.zip
+npm run db:backup
+systemctl stop server-expiry-reminder
+unzip -o "/root/$RELEASE_ZIP" -d /opt/server-expiry-reminder
+npm install --jobs=1 --no-audit --no-fund
+npm run db:migrate
+npm run build
+systemctl start server-expiry-reminder
+systemctl is-active server-expiry-reminder
+curl -i http://127.0.0.1:3000/api/health
+~~~
+
+如果更新了 Nginx 配置，再执行：
+
+~~~bash
+nginx -t
+systemctl reload nginx
+~~~
+
+更新失败时，先查看日志，不要删除数据库文件：
+
+~~~bash
+systemctl status server-expiry-reminder --no-pager -l
+journalctl -u server-expiry-reminder -n 80 --no-pager
+~~~
