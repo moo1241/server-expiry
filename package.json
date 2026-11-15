@@ -1,6 +1,6 @@
 {
   "name": "server-expiry-reminder",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Single-user server expiry reminder system",
   "engines": {
@@ -20,7 +20,8 @@
     "admin:create": "npm run admin:create --workspace apps/backend",
     "admin:recovery:create": "npm run admin:recovery:create --workspace apps/backend",
     "build": "npm run build --workspace apps/frontend && npm run build --workspace apps/backend",
-    "start": "npm run start --workspace apps/backend"
+    "start": "npm run start --workspace apps/backend",
+    "start:prod": "node apps/backend/dist/server.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

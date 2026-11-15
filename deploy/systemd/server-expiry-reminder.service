@@ -8,7 +8,8 @@ User=server-reminder
 Group=server-reminder
 WorkingDirectory=/opt/server-expiry-reminder
 EnvironmentFile=/opt/server-expiry-reminder/apps/backend/.env
-ExecStart=/usr/bin/npm start
+Environment=NODE_OPTIONS=--max-old-space-size=384
+ExecStart=/usr/bin/node /opt/server-expiry-reminder/apps/backend/dist/server.js
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=true
