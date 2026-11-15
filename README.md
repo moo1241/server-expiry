@@ -73,7 +73,53 @@ npm run admin:create
 
 ## Telegram 通知
 
-配置 TELEGRAM_BOT_TOKEN、TELEGRAM_CHAT_ID 和 REMINDER_SCHEDULER_ENABLED=true。测试接口为 POST /api/telegram/test。消息使用中文并按后台选择的时区显示。
+### 1. 创建 Telegram Bot
+
+在 Telegram 中打开 `@BotFather`，发送 `/newbot`，按提示设置机器人名称和用户名。完成后会得到一串 Bot Token，只保存到服务器的 `apps/backend/.env`，不要提交到 GitHub。
+
+### 2. 获取 Chat ID
+
+先在 Telegram 中打开刚创建的机器人并发送一条消息，例如 `/start`。然后在 Ubuntu 服务器执行下面的命令，把 `你的BOT_TOKEN` 替换为实际 Token：
+
+~~~bash
+curl "https://api.telegram.org/bot你的BOT_TOKEN/getUpdates"
+~~~
+
+在返回的 JSON 中找到 `message.chat.id`。个人聊天通常是正数，群组聊天通常是负数。把这个值作为 `TELEGRAM_CHAT_ID`。
+
+### 3. 配置服务器环境变量
+
+编辑后端环境文件：
+
+~~~bash
+cd /opt/server-expiry-reminder
+nano apps/backend/.env
+~~~
+
+加入或修改下面三项。不要把真实 Token 和 Chat ID 发到公开仓库：
+
+~~~env
+TELEGRAM_BOT_TOKEN=你的BOT_TOKEN
+TELEGRAM_CHAT_ID=你的CHAT_ID
+REMINDER_SCHEDULER_ENABLED=true
+~~~
+
+保存后重启服务：
+
+~~~bash
+systemctl restart server-expiry-reminder
+systemctl is-active server-expiry-reminder
+~~~
+
+### 4. 测试机器人
+
+登录管理后台，打开左侧的 Telegram 页面，确认“机器人配置”和“调度器状态”均已启用，然后发送测试消息。也可以先检查接口：
+
+~~~bash
+curl -sS http://127.0.0.1:3000/api/telegram/status
+~~~
+
+返回 `configured: true` 和 `schedulerEnabled: true` 后，服务器到期提醒任务会按照后台设置的提醒规则自动发送。消息使用中文，并按后台选择的北京时间或 UTC 显示。
 
 ## 构建和 Ubuntu 部署
 
